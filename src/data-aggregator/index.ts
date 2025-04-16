@@ -27,16 +27,29 @@ async function getRegisteredDids(sppId: number) {
 
 async function getDataForHour(
   sdk: Sdk,
+  didAccount: string,
   startHour: DataHour
 ): Promise<{ outputAC: number; outputDC: number } | null> {
-  const item = await sdk.storage.getItem({
-    itemType: `cpin-production-${formatDataHour(startHour)}`,
-  });
-  if (!item) {
+  const key = `cpin-production-${formatDataHour(startHour)}`;
+  let item: any;
+  try {
+    item = await sdk.storage.getItem({
+      itemType: key,
+      address: didAccount,
+      wssBaseUrl: config.PEAQ_WSS_URL,
+    });
+  } catch (e) {
+    console.log('could not read ', key);
+  }
+
+  if (!item || !item[key]) {
     return null;
   }
-  const itemJson = JSON.parse(hexToString(item?.data));
-  return itemJson;
+  const data = JSON.parse(item[key]);
+  return {
+    outputAC: data.outputAC,
+    outputDC: data.outputDC,
+  };
 }
 
 async function checkDid(sdk: Sdk, didAccount: string) {
@@ -52,16 +65,16 @@ async function checkDid(sdk: Sdk, didAccount: string) {
 export async function getSppProduction(sppId: number) {
   const dids = await getRegisteredDids(sppId);
   const sdk = await Sdk.createInstance({
-    baseUrl: config.PEAQ_API_URL,
+    baseUrl: config.PEAQ_EVM_URL,
+    chainType: Sdk.ChainType.EVM,
   });
-  await sdk.connect();
 
   let totalProduction = 0;
 
   for (const did of dids) {
     await checkDid(sdk, did.didAccount);
     const latestHour = getLatestHour();
-    const data = await getDataForHour(sdk, latestHour);
+    const data = await getDataForHour(sdk, did.didAccount, latestHour);
     if (data) {
       totalProduction += data.outputAC;
     }

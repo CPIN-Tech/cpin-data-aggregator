@@ -47,7 +47,7 @@ export interface CpinSppStakingInterface extends utils.Interface {
     "multicall(bytes[])": FunctionFragment;
     "nft()": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
-    "registerDid(uint256,uint256)": FunctionFragment;
+    "registerDid(uint256,address)": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "sppDatas(uint256)": FunctionFragment;
@@ -57,7 +57,7 @@ export interface CpinSppStakingInterface extends utils.Interface {
     "tokenIdToSppId(uint256)": FunctionFragment;
     "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
     "tokenRewardIndexes(uint256,uint256)": FunctionFragment;
-    "unregisterDid(uint256,uint256)": FunctionFragment;
+    "unregisterDid(uint256,address)": FunctionFragment;
     "updateSppIpfsCid(uint256,string)": FunctionFragment;
     "withdrawToken(uint256,address,bytes)": FunctionFragment;
   };
@@ -177,7 +177,7 @@ export interface CpinSppStakingInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "registerDid",
-    values: [BigNumberish, BigNumberish]
+    values: [BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -217,7 +217,7 @@ export interface CpinSppStakingInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "unregisterDid",
-    values: [BigNumberish, BigNumberish]
+    values: [BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "updateSppIpfsCid",
@@ -325,8 +325,8 @@ export interface CpinSppStakingInterface extends utils.Interface {
   ): Result;
 
   events: {
-    "DidRegistered(uint256,uint256)": EventFragment;
-    "DidUnregistered(uint256,uint256)": EventFragment;
+    "DidRegistered(uint256,address)": EventFragment;
+    "DidUnregistered(uint256,address)": EventFragment;
     "Initialized(uint64)": EventFragment;
     "ProductionInfoAdded(uint256,uint32,uint128,uint128,uint128)": EventFragment;
     "RewardCollected(uint256,uint256,address,uint128,uint128)": EventFragment;
@@ -355,10 +355,10 @@ export interface CpinSppStakingInterface extends utils.Interface {
 
 export interface DidRegisteredEventObject {
   sppId: BigNumber;
-  didAccountPubKey: BigNumber;
+  didAccount: string;
 }
 export type DidRegisteredEvent = TypedEvent<
-  [BigNumber, BigNumber],
+  [BigNumber, string],
   DidRegisteredEventObject
 >;
 
@@ -366,10 +366,10 @@ export type DidRegisteredEventFilter = TypedEventFilter<DidRegisteredEvent>;
 
 export interface DidUnregisteredEventObject {
   sppId: BigNumber;
-  didAccountPubKey: BigNumber;
+  didAccount: string;
 }
 export type DidUnregisteredEvent = TypedEvent<
-  [BigNumber, BigNumber],
+  [BigNumber, string],
   DidUnregisteredEventObject
 >;
 
@@ -575,7 +575,7 @@ export interface CpinSppStaking extends BaseContract {
       sppId: BigNumberish,
       index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<[string]>;
 
     getSppDidCount(
       sppId: BigNumberish,
@@ -619,7 +619,7 @@ export interface CpinSppStaking extends BaseContract {
 
     registerDid(
       sppId: BigNumberish,
-      didAccountPubKey: BigNumberish,
+      didAccount: string,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
@@ -689,7 +689,7 @@ export interface CpinSppStaking extends BaseContract {
 
     unregisterDid(
       sppId: BigNumberish,
-      didAccountPubKey: BigNumberish,
+      didAccount: string,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
@@ -756,7 +756,7 @@ export interface CpinSppStaking extends BaseContract {
     sppId: BigNumberish,
     index: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<string>;
 
   getSppDidCount(
     sppId: BigNumberish,
@@ -800,7 +800,7 @@ export interface CpinSppStaking extends BaseContract {
 
   registerDid(
     sppId: BigNumberish,
-    didAccountPubKey: BigNumberish,
+    didAccount: string,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
@@ -867,7 +867,7 @@ export interface CpinSppStaking extends BaseContract {
 
   unregisterDid(
     sppId: BigNumberish,
-    didAccountPubKey: BigNumberish,
+    didAccount: string,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
@@ -937,7 +937,7 @@ export interface CpinSppStaking extends BaseContract {
       sppId: BigNumberish,
       index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<string>;
 
     getSppDidCount(
       sppId: BigNumberish,
@@ -978,7 +978,7 @@ export interface CpinSppStaking extends BaseContract {
 
     registerDid(
       sppId: BigNumberish,
-      didAccountPubKey: BigNumberish,
+      didAccount: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1045,7 +1045,7 @@ export interface CpinSppStaking extends BaseContract {
 
     unregisterDid(
       sppId: BigNumberish,
-      didAccountPubKey: BigNumberish,
+      didAccount: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1064,22 +1064,19 @@ export interface CpinSppStaking extends BaseContract {
   };
 
   filters: {
-    "DidRegistered(uint256,uint256)"(
+    "DidRegistered(uint256,address)"(
       sppId?: null,
-      didAccountPubKey?: null
+      didAccount?: null
     ): DidRegisteredEventFilter;
-    DidRegistered(
-      sppId?: null,
-      didAccountPubKey?: null
-    ): DidRegisteredEventFilter;
+    DidRegistered(sppId?: null, didAccount?: null): DidRegisteredEventFilter;
 
-    "DidUnregistered(uint256,uint256)"(
+    "DidUnregistered(uint256,address)"(
       sppId?: null,
-      didAccountPubKey?: null
+      didAccount?: null
     ): DidUnregisteredEventFilter;
     DidUnregistered(
       sppId?: null,
-      didAccountPubKey?: null
+      didAccount?: null
     ): DidUnregisteredEventFilter;
 
     "Initialized(uint64)"(version?: null): InitializedEventFilter;
@@ -1286,7 +1283,7 @@ export interface CpinSppStaking extends BaseContract {
 
     registerDid(
       sppId: BigNumberish,
-      didAccountPubKey: BigNumberish,
+      didAccount: string,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
@@ -1339,7 +1336,7 @@ export interface CpinSppStaking extends BaseContract {
 
     unregisterDid(
       sppId: BigNumberish,
-      didAccountPubKey: BigNumberish,
+      didAccount: string,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
@@ -1457,7 +1454,7 @@ export interface CpinSppStaking extends BaseContract {
 
     registerDid(
       sppId: BigNumberish,
-      didAccountPubKey: BigNumberish,
+      didAccount: string,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
@@ -1513,7 +1510,7 @@ export interface CpinSppStaking extends BaseContract {
 
     unregisterDid(
       sppId: BigNumberish,
-      didAccountPubKey: BigNumberish,
+      didAccount: string,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 

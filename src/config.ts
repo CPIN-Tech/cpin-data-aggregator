@@ -5,13 +5,14 @@ interface Env {
   ENCRYPTED_PK: string;
   ENCRYPTED_PASS: string;
   PASS: string;
-  PEAQ_API_URL: string;
+  PEAQ_WSS_URL: string;
+  PEAQ_EVM_URL: string;
   PINATA_GATEWAY_URL: string;
 }
 
 const schema: JSONSchemaType<Env> = {
   type: 'object',
-  required: ['PORT', 'ENCRYPTED_PK', 'PEAQ_API_URL', 'PINATA_GATEWAY_URL'],
+  required: ['PORT', 'ENCRYPTED_PK', 'PEAQ_WSS_URL', 'PEAQ_EVM_URL', 'PINATA_GATEWAY_URL'],
   properties: {
     PORT: {
       type: 'number',
@@ -26,7 +27,10 @@ const schema: JSONSchemaType<Env> = {
     PASS: {
       type: 'string',
     },
-    PEAQ_API_URL: {
+    PEAQ_WSS_URL: {
+      type: 'string',
+    },
+    PEAQ_EVM_URL: {
       type: 'string',
     },
     PINATA_GATEWAY_URL: {

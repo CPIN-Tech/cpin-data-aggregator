@@ -64,16 +64,8 @@ const getSppDidPubKeys = makeSmartCached(
     console.log('spp', sppId, 'count', count);
     const dids: string[] = [];
     for (let i = 0; i < count; i++) {
-      const did = await sppStaking.getSppDidByIndex(sppId, i);
-      let publicKey = did.toHexString();
-      if (publicKey.startsWith('0x')) {
-        publicKey = publicKey.slice(2);
-      }
-      if (publicKey.length < 64) {
-        publicKey = publicKey.padStart(64, '0');
-      }
-      publicKey = '0x' + publicKey;
-      dids.push(publicKey);
+      const didAccount = await sppStaking.getSppDidByIndex(sppId, i);
+      dids.push(didAccount);
     }
     return dids;
   },
